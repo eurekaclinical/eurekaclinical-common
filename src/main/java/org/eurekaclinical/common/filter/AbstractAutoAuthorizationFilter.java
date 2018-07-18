@@ -2,9 +2,9 @@ package org.eurekaclinical.common.filter;
 
 /*-
  * #%L
- * Eureka! Clinical Standard APIs
+ * Eureka! Clinical Common
  * %%
- * Copyright (C) 2016 Emory University
+ * Copyright (C) 2016 - 2018 Emory University
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,20 @@ package org.eurekaclinical.common.filter;
  * limitations under the License.
  * #L%
  */
+
 import java.io.IOException;
+import java.util.Map;
+
 import javax.inject.Inject;
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.eurekaclinical.standardapis.dao.UserDao;
 import org.eurekaclinical.standardapis.dao.UserTemplateDao;
 import org.eurekaclinical.standardapis.entity.RoleEntity;
@@ -34,57 +40,71 @@ import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
-/**
- *
- * @author Andrew Post
- */
-public abstract class AbstractAutoAuthorizationFilter<R extends RoleEntity, U extends UserEntity<R>, T extends UserTemplateEntity<R>> implements AutoAuthorizationFilter {
+public abstract  class AbstractAutoAuthorizationFilter <R extends RoleEntity,U extends UserEntity<R>, T extends UserTemplateEntity<R>> implements Filter {
 
-    private final UserTemplateDao<T> userTemplateDao;
-    private final UserDao<U> userDao;
-
-    @Inject
-    public AbstractAutoAuthorizationFilter(UserTemplateDao<T> inUserTemplateDao,
-            UserDao<U> inUserDao) {
-        this.userTemplateDao = inUserTemplateDao;
-        this.userDao = inUserDao;
-    }
-
-    @Override
-    public void init(FilterConfig fc) throws ServletException {
-    }
-
-    @Override
-    public void doFilter(ServletRequest inRequest, ServletResponse inResponse, FilterChain inFilterChain) throws IOException, ServletException {
-        HttpServletRequest servletRequest = (HttpServletRequest) inRequest;
-        AttributePrincipal userPrincipal = (AttributePrincipal) servletRequest.getUserPrincipal();
-        boolean autoAuthorizationPermitted = true;
-        if (autoAuthorizationPermitted) {
-            String remoteUser = servletRequest.getRemoteUser();
-            if (remoteUser != null) {
-                preAuthorizationHook(servletRequest);
-                T autoAuthorizationTemplate = this.userTemplateDao.getAutoAuthorizationTemplate();
-                if (this.userDao.getByName(remoteUser) == null) {
-                    if (autoAuthorizationTemplate != null) {
-                        U user = toUserEntity(autoAuthorizationTemplate, remoteUser);
-                        this.userDao.create(user);
-                    }
-                }
-                postAuthorizationHook(autoAuthorizationTemplate, servletRequest);
-            }
+    
+      private final UserTemplateDao<T> userTemplateDao;
+        private final UserDao<U> userDao;
+        private final AutoAuthCriteriaParser AUTO_AUTH_CRITERIA_PARSER = new AutoAuthCriteriaParser();
+        
+        @Inject
+        public AbstractAutoAuthorizationFilter(UserTemplateDao<T> inUserTemplateDao,
+                UserDao<U> inUserDao) {
+            this.userTemplateDao = inUserTemplateDao;
+            this.userDao = inUserDao;
         }
-        inFilterChain.doFilter(inRequest, inResponse);
+
+        
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        AttributePrincipal userPrincipal = (AttributePrincipal) servletRequest.getUserPrincipal();
+        HttpSession session = servletRequest.getSession(false);
+        if (userPrincipal != null && session != null) {
+            Map<String, Object> attributes = userPrincipal.getAttributes();
+            String[] roleNames;
+            synchronized (session) {
+                roleNames = (String[]) session.getAttribute("roles");
+                if (roleNames == null) {
+                    //User Not Found
+                    String remoteUser = servletRequest.getRemoteUser();
+                    T autoAuthorizationTemplate = this.userTemplateDao.getAutoAuthorizationTemplate(); 
+                    try {
+                        if (remoteUser != null && autoAuthorizationTemplate != null && AUTO_AUTH_CRITERIA_PARSER.parse(autoAuthorizationTemplate.getCriteria(), attributes)) {
+                            //User Creation
+                            U user = toUserEntity(autoAuthorizationTemplate, remoteUser);
+                            this.userDao.create(user);
+                        }
+                        else {
+                           // throw new Exception(Remote User or Template error);
+                        }
+                       } catch (Exception ex) {      
+                           // throw new Exception(User Creation error);
+                        }
+                        chain.doFilter(request, response);
+                   
+                }
+            }
+            chain.doFilter(request, response);
+        } else {
+            //throw new Exception
+        }
     }
 
     @Override
     public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
+    
+   protected abstract U toUserEntity(T userTemplate, String username);
 
-    protected abstract U toUserEntity(T userTemplate, String username);
 
-    protected void preAuthorizationHook(HttpServletRequest req) {
-    }
-
-    protected void postAuthorizationHook(T userTemplate, HttpServletRequest req) {
-    }
 }
