@@ -2,9 +2,9 @@ package org.eurekaclinical.common.filter;
 
 /*-
  * #%L
- * Eureka! Clinical Standard APIs
+ * Eureka! Clinical Registry Service
  * %%
- * Copyright (C) 2016 Emory University
+ * Copyright (C) 2017 - 2018 Emory University
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,19 @@ package org.eurekaclinical.common.filter;
  * #L%
  */
 
-import javax.servlet.Filter;
+import freemarker.template.TemplateException;
+
 
 /**
  *
- * @author arpost
+ * @author Andrew Post
  */
-public interface AutoAuthorizationFilter extends Filter {
+class CriteriaParseException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+    CriteriaParseException(TemplateException ex) {
+        super(ex);
+    }
 
 }

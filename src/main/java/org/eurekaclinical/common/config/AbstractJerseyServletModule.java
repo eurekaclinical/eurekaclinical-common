@@ -38,7 +38,6 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
-import org.eurekaclinical.common.filter.AutoAuthorizationFilter;
 import org.eurekaclinical.common.filter.HasAuthenticatedSessionFilter;
 import org.eurekaclinical.standardapis.props.CasJerseyEurekaClinicalProperties;
 
@@ -63,7 +62,7 @@ public abstract class AbstractJerseyServletModule extends JerseyServletModule {
     private final CasJerseyEurekaClinicalProperties properties;
 
     @Inject(optional = true)
-    private AutoAuthorizationFilter autoAuthorizationFilter;
+
     private final boolean doesProxy;
 
     protected AbstractJerseyServletModule(CasJerseyEurekaClinicalProperties inProperties,
@@ -149,11 +148,6 @@ public abstract class AbstractJerseyServletModule extends JerseyServletModule {
         filter(PROTECTED_API_PATH).through(HasAuthenticatedSessionFilter.class);
     }
 
-    protected void setupAutoAuthorization() {
-        if (this.autoAuthorizationFilter != null) {
-            filter(UNPROTECTED_PATH).through(AutoAuthorizationFilter.class);
-        }
-    }
 
     @Override
     protected void configureServlets() {
@@ -162,7 +156,6 @@ public abstract class AbstractJerseyServletModule extends JerseyServletModule {
          * CAS filters must go before other filters.
          */
         this.setupCasFilters();
-        this.setupAutoAuthorization();
         this.setupFilters();
         this.setupContainer();
     }
