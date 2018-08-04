@@ -29,15 +29,15 @@ import org.jasig.cas.client.authentication.AttributePrincipal;
  *
  * @author Andrew Post
  */
-public interface UserSupport {
+public interface UserSupport<E extends UserEntity, U extends User> {
 
     AttributePrincipal getUserPrincipal(HttpServletRequest request);
 
     Map<String, Object> getUserPrincipalAttributes(HttpServletRequest request);
 
-    boolean isSameUser(HttpServletRequest servletRequest, User user);
+    boolean isSameUser(HttpServletRequest servletRequest, U user);
 
-    boolean isSameUser(HttpServletRequest servletRequest, UserEntity user);
+    boolean isSameUser(HttpServletRequest servletRequest, E user);
 
     boolean isSameUser(HttpServletRequest servletRequest, String username);
 

@@ -22,6 +22,7 @@ package org.eurekaclinical.common.auth;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.eurekaclinical.common.comm.User;
+import org.eurekaclinical.standardapis.entity.RoleEntity;
 import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
@@ -29,7 +30,7 @@ import org.jasig.cas.client.authentication.AttributePrincipal;
  *
  * @author Andrew Post
  */
-public abstract class AbstractUserSupport implements UserSupport {
+public abstract class AbstractUserSupport<E extends UserEntity<? extends RoleEntity>, U extends User> implements UserSupport<E, U> {
 
     AbstractUserSupport() {
     }
@@ -46,12 +47,12 @@ public abstract class AbstractUserSupport implements UserSupport {
     }
 
     @Override
-    public boolean isSameUser(HttpServletRequest servletRequest, User user) {
+    public boolean isSameUser(HttpServletRequest servletRequest, U user) {
         return isSameUser(servletRequest, user.getUsername());
     }
 
     @Override
-    public boolean isSameUser(HttpServletRequest servletRequest, UserEntity user) {
+    public boolean isSameUser(HttpServletRequest servletRequest, E user) {
         return isSameUser(servletRequest, user.getUsername());
     }
 
