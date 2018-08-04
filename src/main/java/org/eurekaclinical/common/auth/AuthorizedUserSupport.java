@@ -23,7 +23,9 @@ package org.eurekaclinical.common.auth;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
+import org.eurekaclinical.common.comm.User;
 import org.eurekaclinical.standardapis.dao.UserDao;
+import org.eurekaclinical.standardapis.entity.RoleEntity;
 import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.exception.HttpStatusException;
 import org.jasig.cas.client.authentication.AttributePrincipal;
@@ -34,18 +36,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Post
  */
-public final class AuthorizedUserSupport extends AbstractUserSupport {
+public final class AuthorizedUserSupport<E extends UserEntity<? extends RoleEntity>, D extends UserDao<E>, U extends User> extends AbstractUserSupport<E, U> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizedUserSupport.class);
 
-    private final UserDao userDao;
+    private final D userDao;
 
-    public AuthorizedUserSupport(UserDao inUserDao) {
+    public AuthorizedUserSupport(D inUserDao) {
         this.userDao = inUserDao;
     }
 
     @Override
-    public boolean isSameUser(HttpServletRequest servletRequest, UserEntity user) {
+    public boolean isSameUser(HttpServletRequest servletRequest, E user) {
         return isSameUser(servletRequest, user.getUsername());
     }
 
@@ -58,9 +60,9 @@ public final class AuthorizedUserSupport extends AbstractUserSupport {
      * @throws HttpStatusException if the logged-in user isn't in the user
      * table, which means the user is not authorized to use eureka-protempa-etl.
      */
-    public UserEntity getUser(HttpServletRequest servletRequest) {
+    public E getUser(HttpServletRequest servletRequest) {
         AttributePrincipal principal = getUserPrincipal(servletRequest);
-        UserEntity result = this.userDao.getByPrincipal(principal);
+        E result = this.userDao.getByPrincipal(principal);
         if (result == null) {
             throw new HttpStatusException(Status.FORBIDDEN, "User " + principal.getName() + " is not authorized to use this resource");
         }
