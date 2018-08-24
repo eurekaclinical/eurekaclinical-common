@@ -36,7 +36,7 @@ import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
  */
 public abstract class AbstractUserTemplateResource<U extends UserTemplate, R extends RoleEntity, E extends UserTemplateEntity<R>> extends AbstractNamedReadWriteResource<E, U> {
 
-    public AbstractUserTemplateResource(UserTemplateDao<E> inUserDao) {
+    public AbstractUserTemplateResource(UserTemplateDao<R, E> inUserDao) {
         super(inUserDao, true);
     }
 
