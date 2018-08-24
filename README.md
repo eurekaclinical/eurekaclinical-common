@@ -21,13 +21,16 @@ See [Structure of Eureka! Clinical microservices](https://github.com/eurekaclini
 
 Latest release: [![Latest release](https://maven-badges.herokuapp.com/maven-central/org.eurekaclinical/eurekaclinical-common/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.eurekaclinical/eurekaclinical-common)
 
+## Version 4.0
+* Fully implement auto-authorization.
+
 ## Version 3.0
 * Removed RolesFromServiceFilter because Eureka! Clinical webapps no longer need role information.
 * Removed WebappServletModule, which was superceded by APIGatewayServletModule.
 * Removed AbstractAuthorizingServletModule and AbstractAuthorizingJerseyServletModule, which are unused.
 * Add POST and PUT calls for passing a string into an Eureka! Clinical API gateway proxy.
 * Require version 2.1 or greater of eurekaclinical-standard-apis.
-* Fully implement auto-authorization.
+
 
 ## Version 2.0
 The goal of the 2.0 series is to have sufficient functionality for all Eureka! Clinical web applications to depend on eurekaclinical-common.
