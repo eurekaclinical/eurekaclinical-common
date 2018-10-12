@@ -21,6 +21,11 @@ See [Structure of Eureka! Clinical microservices](https://github.com/eurekaclini
 
 Latest release: [![Latest release](https://maven-badges.herokuapp.com/maven-central/org.eurekaclinical/eurekaclinical-common/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.eurekaclinical/eurekaclinical-common)
 
+## Version 4.1
+* Added a missing class from the auto-authorization work,
+  ProxyingServiceServletModuleWithAutoAuthorization, for services that
+  need to connect to other services.
+
 ## Version 4.0
 * Fully implement auto-authorization.
 
