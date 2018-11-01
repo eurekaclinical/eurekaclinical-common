@@ -20,14 +20,13 @@
 package org.eurekaclinical.common.filter;
 
 import java.io.IOException;
+import javax.inject.Singleton;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
-import com.google.inject.Singleton;
 
 /**
  * Filter that sets a request attribute, <code>userIsActivated</code>, if there 

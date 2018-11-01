@@ -21,6 +21,7 @@ package org.eurekaclinical.common.filter;
  */
 import java.io.IOException;
 import java.util.Map;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.Filter;
 
@@ -39,14 +40,28 @@ import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
+/**
+ * Implements auto-authorization. This filter checks if a user record exists for
+ * the current user. If there is not, if there is an auto-authorization 
+ * user template, and if the user's attributes math any attribute constraints
+ * that are specified in the template, it will create a user record with
+ * the roles and other settings that are specified in the template.
+ * 
+ * The following types are injected into the constructor and require bindings:
+ * * UserTemplateDao&lt;? extends RoleEntity, ?&gt;
+ * * UserDao&lt;? extends UserEntity&lt;? extends RoleEntity&gt;&gt;
+ * 
+ * @author Andrew Post
+ */
 @Singleton
 public class AutoAuthorizationFilter implements Filter {
 
-    private final UserTemplateDao<?, ?> userTemplateDao;
+    private final UserTemplateDao<? extends RoleEntity, ?> userTemplateDao;
     private final AutoAuthCriteriaParser AUTO_AUTH_CRITERIA_PARSER = new AutoAuthCriteriaParser();
     private final UserDao<? extends UserEntity<? extends RoleEntity>> userDao;
 
-    protected AutoAuthorizationFilter(UserTemplateDao<?, ?> inUserTemplateDao, UserDao<?> inUserDao) {
+    @Inject
+    public AutoAuthorizationFilter(UserTemplateDao<? extends RoleEntity, ?> inUserTemplateDao, UserDao<? extends UserEntity<? extends RoleEntity>> inUserDao) {
         this.userTemplateDao = inUserTemplateDao;
         this.userDao = inUserDao;
     }

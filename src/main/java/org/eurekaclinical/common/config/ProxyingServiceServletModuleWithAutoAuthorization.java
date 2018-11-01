@@ -22,6 +22,18 @@ package org.eurekaclinical.common.config;
 import org.eurekaclinical.common.filter.AutoAuthorizationFilter;
 import org.eurekaclinical.standardapis.props.CasJerseyEurekaClinicalProperties;
 
+/**
+ * Sets up Guice's servlet module, sets up proxying to call another service, 
+ * and runs the auto-authorization filter.
+ * 
+ * The following types are injected by the auto-authorization filter and 
+ * require bindings:
+ * * UserTemplateDao&lt;? extends RoleEntity, ?&gt;
+ * * UserDao&lt;? extends UserEntity&lt;? extends RoleEntity&gt;&gt;
+ * 
+ * @author Andrew Post
+ * @see AutoAuthorizationFilter
+ */
 public class ProxyingServiceServletModuleWithAutoAuthorization extends ProxyingServiceServletModule {
 
     public ProxyingServiceServletModuleWithAutoAuthorization(CasJerseyEurekaClinicalProperties inProperties,

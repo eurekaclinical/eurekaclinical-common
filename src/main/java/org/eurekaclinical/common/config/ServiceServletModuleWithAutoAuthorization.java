@@ -26,8 +26,14 @@ import org.eurekaclinical.standardapis.props.CasJerseyEurekaClinicalProperties;
  * The same as the {@link ServiceServletModule} except it activates the auto
  * authorization filter, which will automatically authorize a user to access a
  * service if there is a user template with auto authorization enabled.
- *
+ * 
+ * The following types are injected by the auto-authorization filter and 
+ * require the following bindings:
+ * * UserTemplateDao&lt;? extends RoleEntity, ?&gt;
+ * * UserDao&lt;? extends UserEntity&lt;? extends RoleEntity&gt;&gt;
+ * 
  * @author Andrew Post
+ * @see AutoAuthorizationFilter
  */
 public class ServiceServletModuleWithAutoAuthorization extends ServiceServletModule {
 
