@@ -22,7 +22,6 @@ package org.eurekaclinical.common.filter;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -38,22 +37,27 @@ import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
-@Deprecated
-public abstract class AbstractAutoAuthorizationFilter<R extends RoleEntity, U extends UserEntity<R>, T extends UserTemplateEntity<R>> implements Filter {
+public abstract class AbstractAutoAuthorizationFilter<R extends RoleEntity, U extends UserEntity<R>, T extends UserTemplateEntity<R>> implements AutoAuthorizationFilter {
 
-    private final UserTemplateDao<R, T> userTemplateDao;
+    private final UserTemplateDao<R, U, T> userTemplateDao;
     private final UserDao<U> userDao;
     private final AutoAuthCriteriaParser AUTO_AUTH_CRITERIA_PARSER = new AutoAuthCriteriaParser();
 
-    protected AbstractAutoAuthorizationFilter(UserTemplateDao<R, T> inUserTemplateDao,
+    protected AbstractAutoAuthorizationFilter(UserTemplateDao<R, U, T> inUserTemplateDao,
             UserDao<U> inUserDao) {
         this.userTemplateDao = inUserTemplateDao;
         this.userDao = inUserDao;
     }
 
+    /**
+     * Initializes the filter.
+     * 
+     * @param filterConfig filter configuration.
+     * @throws javax.servlet.ServletException if an error occurred during 
+     * initialization.
+     */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO Auto-generated method stub
 
     }
 
@@ -74,8 +78,7 @@ public abstract class AbstractAutoAuthorizationFilter<R extends RoleEntity, U ex
                     T autoAuthorizationTemplate = this.userTemplateDao.getAutoAuthorizationTemplate();
                     try {
                         if (remoteUser != null && autoAuthorizationTemplate != null && AUTO_AUTH_CRITERIA_PARSER.parse(autoAuthorizationTemplate.getCriteria(), attributes)) {
-                            //User Creation
-                            U user = toUserEntity(autoAuthorizationTemplate, remoteUser);
+                            U user = this.userTemplateDao.newUserEntityInstance(remoteUser, autoAuthorizationTemplate.getRoles());
                             this.userDao.create(user);
                         } else {
                             // throw new Exception(Remote User or Template error);
@@ -93,12 +96,12 @@ public abstract class AbstractAutoAuthorizationFilter<R extends RoleEntity, U ex
         }
     }
 
+    /**
+     * Cleans up resources that were created by the filter.
+     */
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
 
     }
-
-    protected abstract U toUserEntity(T userTemplate, String username);
 
 }

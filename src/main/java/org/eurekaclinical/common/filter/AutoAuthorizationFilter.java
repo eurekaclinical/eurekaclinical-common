@@ -20,33 +20,12 @@ package org.eurekaclinical.common.filter;
  * #L%
  */
 
-import javax.inject.Singleton;
-import org.eurekaclinical.standardapis.dao.UserDao;
-import org.eurekaclinical.standardapis.dao.UserTemplateDao;
-import org.eurekaclinical.standardapis.entity.RoleEntity;
-import org.eurekaclinical.standardapis.entity.UserEntity;
-import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
+import javax.servlet.Filter;
 
 /**
  *
  * @author Andrew Post
- * @param <R>
- * @param <U>
- * @param <T>
  */
-@Singleton
-public class AutoAuthorizationFilter<R extends RoleEntity, U extends UserEntity<R>, T extends UserTemplateEntity<R>> extends AbstractAutoAuthorizationFilter {
-    private final UserTemplateDao<R, T> userTemplateDao;
-    
-    public AutoAuthorizationFilter(UserTemplateDao<R, T> inUserTemplateDao,
-            UserDao<U> inUserDao) {
-        super(inUserTemplateDao, inUserDao);
-        this.userTemplateDao = inUserTemplateDao;
-    }
-
-    @Override
-    protected UserEntity toUserEntity(UserTemplateEntity userTemplate, String username) {
-        return this.userTemplateDao.newUserEntityInstance(username, userTemplate.getRoles());
-    }
+public interface AutoAuthorizationFilter extends Filter {
     
 }

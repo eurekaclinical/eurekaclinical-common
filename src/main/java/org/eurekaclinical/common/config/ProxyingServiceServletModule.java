@@ -20,6 +20,7 @@ package org.eurekaclinical.common.config;
  * #L%
  */
 
+import org.eurekaclinical.common.filter.AutoAuthorizationFilter;
 import org.eurekaclinical.standardapis.props.CasJerseyEurekaClinicalProperties;
 
 /**
@@ -34,10 +35,27 @@ import org.eurekaclinical.standardapis.props.CasJerseyEurekaClinicalProperties;
  */
 public class ProxyingServiceServletModule extends AbstractAuthorizingJerseyServletModuleWithPersist {
 
+    private final Class<? extends AutoAuthorizationFilter> cls;
+    
     public ProxyingServiceServletModule(
             CasJerseyEurekaClinicalProperties inProperties,
             String inPackageNames) {
+        this(inProperties, inPackageNames, null);
+    }
+
+    public ProxyingServiceServletModule(
+            CasJerseyEurekaClinicalProperties inProperties,
+            String inPackageNames, Class<? extends AutoAuthorizationFilter> inCls) {
         super(inProperties, inPackageNames, true);
+        this.cls = inCls;
+    }
+    
+    @Override
+    protected void setupFilters() {
+        super.setupFilters();
+        if (this.cls != null) {
+            filter("/*").through(this.cls);
+        }
     }
 
 }

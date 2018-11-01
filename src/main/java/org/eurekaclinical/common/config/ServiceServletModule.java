@@ -20,6 +20,7 @@ package org.eurekaclinical.common.config;
  * #L%
  */
 
+import org.eurekaclinical.common.filter.AutoAuthorizationFilter;
 import org.eurekaclinical.standardapis.props.CasJerseyEurekaClinicalProperties;
 
 /**
@@ -33,11 +34,28 @@ import org.eurekaclinical.standardapis.props.CasJerseyEurekaClinicalProperties;
  * @author hrathod
  */
 public class ServiceServletModule extends AbstractAuthorizingJerseyServletModuleWithPersist {
+    
+    private final Class<? extends AutoAuthorizationFilter> cls;
 
     public ServiceServletModule(
             CasJerseyEurekaClinicalProperties inProperties,
             String inPackageNames) {
-        super(inProperties, inPackageNames, false);
+        this(inProperties, inPackageNames, null);
     }
-
+    
+    public ServiceServletModule(
+            CasJerseyEurekaClinicalProperties inProperties,
+            String inPackageNames, Class<? extends AutoAuthorizationFilter> inCls) {
+        super(inProperties, inPackageNames, false);
+        this.cls = inCls;
+    }
+    
+    @Override
+    protected void setupFilters() {
+        super.setupFilters();
+        if (this.cls != null) {
+            filter("/*").through(this.cls);
+        }
+    }
+    
 }

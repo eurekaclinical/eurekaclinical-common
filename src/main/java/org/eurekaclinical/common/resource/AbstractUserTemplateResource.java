@@ -28,15 +28,20 @@ import javax.ws.rs.core.MediaType;
 import org.eurekaclinical.common.comm.UserTemplate;
 import org.eurekaclinical.standardapis.dao.UserTemplateDao;
 import org.eurekaclinical.standardapis.entity.RoleEntity;
+import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
 
 /**
  *
  * @author Andrew Post
+ * @param <U>
+ * @param <R>
+ * @param <S>
+ * @param <T>
  */
-public abstract class AbstractUserTemplateResource<U extends UserTemplate, R extends RoleEntity, E extends UserTemplateEntity<R>> extends AbstractNamedReadWriteResource<E, U> {
+public abstract class AbstractUserTemplateResource<U extends UserTemplate, R extends RoleEntity, S extends UserEntity<R>, T extends UserTemplateEntity<R>> extends AbstractNamedReadWriteResource<T, U> {
 
-    public AbstractUserTemplateResource(UserTemplateDao<R, E> inUserDao) {
+    public AbstractUserTemplateResource(UserTemplateDao<R, S, T> inUserDao) {
         super(inUserDao, true);
     }
 
@@ -53,7 +58,7 @@ public abstract class AbstractUserTemplateResource<U extends UserTemplate, R ext
     }
 
     @Override
-    protected boolean isAuthorizedEntity(E entity, HttpServletRequest req) {
+    protected boolean isAuthorizedEntity(T entity, HttpServletRequest req) {
         return true;
     }
 
