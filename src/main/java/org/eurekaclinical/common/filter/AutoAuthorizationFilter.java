@@ -21,6 +21,7 @@ package org.eurekaclinical.common.filter;
  */
 import java.io.IOException;
 import java.util.Map;
+import javax.inject.Singleton;
 import javax.servlet.Filter;
 
 import javax.servlet.FilterChain;
@@ -38,6 +39,7 @@ import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
+@Singleton
 public class AutoAuthorizationFilter implements Filter {
 
     private final UserTemplateDao<?, ?> userTemplateDao;
