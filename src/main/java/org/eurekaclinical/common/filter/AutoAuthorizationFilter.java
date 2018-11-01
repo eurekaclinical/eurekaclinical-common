@@ -19,13 +19,87 @@ package org.eurekaclinical.common.filter;
  * limitations under the License.
  * #L%
  */
-
+import java.io.IOException;
+import java.util.Map;
 import javax.servlet.Filter;
 
-/**
- *
- * @author Andrew Post
- */
-public interface AutoAuthorizationFilter extends Filter {
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.eurekaclinical.standardapis.dao.UserDao;
+
+import org.eurekaclinical.standardapis.dao.UserTemplateDao;
+import org.eurekaclinical.standardapis.entity.RoleEntity;
+import org.eurekaclinical.standardapis.entity.UserEntity;
+import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
+import org.jasig.cas.client.authentication.AttributePrincipal;
+
+public class AutoAuthorizationFilter implements Filter {
+
+    private final UserTemplateDao<?, ?> userTemplateDao;
+    private final AutoAuthCriteriaParser AUTO_AUTH_CRITERIA_PARSER = new AutoAuthCriteriaParser();
+    private final UserDao<? extends UserEntity<? extends RoleEntity>> userDao;
+
+    protected AutoAuthorizationFilter(UserTemplateDao<?, ?> inUserTemplateDao, UserDao<?> inUserDao) {
+        this.userTemplateDao = inUserTemplateDao;
+        this.userDao = inUserDao;
+    }
+
+    /**
+     * Initializes the filter.
+     * 
+     * @param filterConfig filter configuration.
+     * @throws javax.servlet.ServletException if an error occurred during 
+     * initialization.
+     */
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        AttributePrincipal userPrincipal = (AttributePrincipal) servletRequest.getUserPrincipal();
+        HttpSession session = servletRequest.getSession(false);
+        if (userPrincipal != null && session != null) {
+            String[] roleNames;
+            synchronized (session) {
+                roleNames = (String[]) session.getAttribute("roles");
+                if (roleNames == null) {
+                    //User Not Found
+                    createUser(servletRequest.getRemoteUser(), userPrincipal.getAttributes());
+                    chain.doFilter(request, response);
+                }
+            }
+            chain.doFilter(request, response);
+        } else {
+            //throw new Exception
+        }
+    }
+
+    /**
+     * Cleans up resources that were created by the filter.
+     */
+    @Override
+    public void destroy() {
+
+    }
     
+    private void createUser(String username, Map<String, Object> attributes) {
+        UserTemplateEntity autoAuthorizationTemplate = this.userTemplateDao.getAutoAuthorizationTemplate();
+        try {
+            if (username != null && autoAuthorizationTemplate != null && AUTO_AUTH_CRITERIA_PARSER.parse(autoAuthorizationTemplate.getCriteria(), attributes)) {
+                this.userDao.createUser(username, autoAuthorizationTemplate.getRoles());
+            }
+        } catch (CriteriaParseException ex) {
+            // throw new Exception(User Creation error);
+        }
+    }
+
 }
