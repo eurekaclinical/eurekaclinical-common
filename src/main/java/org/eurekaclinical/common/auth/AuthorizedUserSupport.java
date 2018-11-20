@@ -25,20 +25,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 import org.eurekaclinical.common.comm.User;
 import org.eurekaclinical.standardapis.dao.UserDao;
-import org.eurekaclinical.standardapis.entity.RoleEntity;
 import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.exception.HttpStatusException;
 import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Andrew Post
+ * @param <E> a user entity type.
+ * @param <D> a user data access object type.
+ * @param <U> a user type.
  */
-public final class AuthorizedUserSupport<E extends UserEntity<? extends RoleEntity>, D extends UserDao<E>, U extends User> extends AbstractUserSupport<E, U> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizedUserSupport.class);
+public final class AuthorizedUserSupport<E extends UserEntity<?>, D extends UserDao<?, E>, U extends User> extends AbstractUserSupport<E, U> {
 
     private final D userDao;
 

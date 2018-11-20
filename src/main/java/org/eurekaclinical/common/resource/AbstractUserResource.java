@@ -33,10 +33,13 @@ import org.eurekaclinical.standardapis.entity.UserEntity;
 /**
  *
  * @author Andrew Post
+ * @param <U> a user type.
+ * @param <E> a user entity type.
+ * @param <R> a role entity type.
  */
 public abstract class AbstractUserResource<U extends User, E extends UserEntity<R>, R extends RoleEntity> extends AbstractNamedReadWriteResource<E, U> {
 
-    public AbstractUserResource(UserDao<E> inUserDao) {
+    public AbstractUserResource(UserDao<R, E> inUserDao) {
         super(inUserDao);
     }
 

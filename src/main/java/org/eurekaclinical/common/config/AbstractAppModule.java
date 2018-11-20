@@ -4,7 +4,7 @@ package org.eurekaclinical.common.config;
  * #%L
  * Eureka! Clinical Common
  * %%
- * Copyright (C) 2016 Emory University
+ * Copyright (C) 2016 - 2018 Emory University
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,24 +23,26 @@ package org.eurekaclinical.common.config;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import org.eurekaclinical.standardapis.dao.UserDao;
-import org.eurekaclinical.standardapis.entity.RoleEntity;
-import org.eurekaclinical.standardapis.entity.UserEntity;
+import org.eurekaclinical.standardapis.dao.UserTemplateDao;
 
 /**
  *
- * @author arpost
+ * @author Andrew Post
  */
-public abstract class AbstractEurekaClinicalAppModule extends AbstractModule {
+public abstract class AbstractAppModule extends AbstractModule {
 
-    private final Class<? extends UserDao<? extends UserEntity<? extends RoleEntity>>> userDaoCls;
-    
-    protected AbstractEurekaClinicalAppModule(Class<? extends UserDao<? extends UserEntity<? extends RoleEntity>>> inUserDaoCls) {
+    private final Class<? extends UserDao<?, ?>> userDaoCls;
+    private final Class<? extends UserTemplateDao<?, ?>> userTemplateDaoCls;
+
+    public AbstractAppModule(Class<? extends UserDao<?, ?>> inUserDaoCls, Class<? extends UserTemplateDao<?, ?>> inUserTemplateDaoCls) {
         this.userDaoCls = inUserDaoCls;
+        this.userTemplateDaoCls = inUserTemplateDaoCls;
     }
 
     @Override
     protected void configure() {
-        bind(new TypeLiteral<UserDao<? extends UserEntity<? extends RoleEntity>>>() {}).to(this.userDaoCls);
+        bind(new TypeLiteral<UserTemplateDao<?, ?>>() {}).to(this.userTemplateDaoCls);
+        bind(new TypeLiteral<UserDao<?, ?>>() {}).to(this.userDaoCls);
     }
     
 }

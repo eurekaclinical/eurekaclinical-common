@@ -36,7 +36,6 @@ import org.eurekaclinical.standardapis.dao.UserDao;
 
 import org.eurekaclinical.standardapis.dao.UserTemplateDao;
 import org.eurekaclinical.standardapis.entity.RoleEntity;
-import org.eurekaclinical.standardapis.entity.UserEntity;
 import org.eurekaclinical.standardapis.entity.UserTemplateEntity;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
@@ -56,12 +55,12 @@ import org.jasig.cas.client.authentication.AttributePrincipal;
 @Singleton
 public class AutoAuthorizationFilter implements Filter {
 
-    private final UserTemplateDao<? extends RoleEntity, ?> userTemplateDao;
+    private final UserTemplateDao<?, ?> userTemplateDao;
     private final AutoAuthCriteriaParser AUTO_AUTH_CRITERIA_PARSER = new AutoAuthCriteriaParser();
-    private final UserDao<? extends UserEntity<? extends RoleEntity>> userDao;
+    private final UserDao<?, ?> userDao;
 
     @Inject
-    public AutoAuthorizationFilter(UserTemplateDao<? extends RoleEntity, ?> inUserTemplateDao, UserDao<? extends UserEntity<? extends RoleEntity>> inUserDao) {
+    public AutoAuthorizationFilter(UserTemplateDao<?, ?> inUserTemplateDao, UserDao<?, ?> inUserDao) {
         this.userTemplateDao = inUserTemplateDao;
         this.userDao = inUserDao;
     }
