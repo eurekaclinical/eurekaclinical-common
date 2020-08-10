@@ -10,11 +10,11 @@
     <parent>
         <groupId>org.eurekaclinical</groupId>
         <artifactId>eurekaclinical-parent-standard-deps</artifactId>
-        <version>4-Alpha-4-SNAPSHOT</version>
+        <version>4-Alpha-4</version>
     </parent>
     
     <properties>
-        <eurekaclinical-standard-apis-version>4.1-Alpha-1-SNAPSHOT</eurekaclinical-standard-apis-version>
+        <eurekaclinical-standard-apis-version>4.1-Alpha-1</eurekaclinical-standard-apis-version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
     
