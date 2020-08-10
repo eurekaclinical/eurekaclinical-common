@@ -15,7 +15,7 @@
     
     <properties>
         <eurekaclinical-standard-apis-version>4.1-Alpha-1</eurekaclinical-standard-apis-version>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <!--maven.javadoc.skip>true</maven.javadoc.skip-->
     </properties>
     
     <url>https://github.com/eurekaclinical/eurekaclinical-common.git</url>
