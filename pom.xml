@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>eurekaclinical-common</artifactId>
     <name>Eureka! Clinical Common</name>
-    <version>5.1-Alpha-2-SNAPSHOT</version>
+    <version>5.1-Alpha-1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>A library of classes shared across the Eureka! Clinical platform.</description>
     
